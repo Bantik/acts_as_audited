@@ -3,3 +3,5 @@
 * 2009-06-02 - Addresses conflict with restful_authentication. Modified current_user method in 
                audit_sweeper to check application controller for helper method to retrieve the
                current user. Added code for this helper method for app controller to README. 
+
+
