@@ -2,18 +2,14 @@
 
 acts_as_audited is an ActiveRecord extension that logs all changes to your models in an audits table.
 
-The purpose of this fork is to store both the previous values and the changed value, making each audit record selfcontained.
+This fork addresses an issue that arises (apparently in the test environment only) in conjunction with restful_authentication. In this situation, restful_authentication provides the current_user method to the application controller as a mixin method, which does not get recognized by controller.respond_to?(:current_user).
 
 == Installation
 
 * Install the plugin into your rails app
-  If you are using Rails 2.1:
+  If you are using Rails 2.1+:
 
-    script/plugin install git://github.com/collectiveidea/acts_as_audited.git
-
-  For versions prior to 2.1:
-
-    git clone git://github.com/collectiveidea/acts_as_audited.git vendor/plugins/acts_as_audited
+    script/plugin install git://github.com/Bantik/acts_as_audited.git
 
 * Generate the migration
     script/generate audited_migration add_audits_table
@@ -21,57 +17,10 @@ The purpose of this fork is to store both the previous values and the changed va
 
 == Usage
 
-If you're using acts_as_audited within Rails, you can simply declare which models should be audited.  acts_as_audited can also automatically record the user that made the change if your controller has a <tt>current_user</tt> method.
+Usage instructions from the master branch apply; the only difference is that if you are using the restful_authentication plugin, you need to add the following method to your application controller:
 
-  class ApplicationController < ActionController::Base
-    audit User, List, Item => {:except => :password}
-  protected
-    def current_user
-      @user ||= User.find(session[:user])
-    end
+  def current_user_for_audit
+    @current_user || current_user
   end
 
-To get auditing outside of Rails you can explicitly declare <tt>acts_as_audited</tt> on your models:
-
-    class User < ActiveRecord::Base
-      acts_as_audited :except => [:password, :mistress]
-    end
-
-See http://opensoul.org/2006/07/21/acts_as_audited for more information.
-
-== Caveats
-
-If your model declares +attr_accessible+ after +acts_as_audited+, you need to set +:protect+ to false. acts_as_audited uses +attr_protected+ internally to prevent malicious users from unassociating your audits, and Rails does not allow both +attr_protected+ and +attr_accessible+. It will default to false if +attr_accessible+ is called before +acts_as_audited+, but needs to be explicitly set if it is called after.
-
-  class User < ActiveRecord::Base
-    acts_as_audited :protect => false
-    attr_accessible :name
-  end
-
-=== ActiveScaffold
-
-Many users have also reported problems with acts_as_audited and ActiveScaffold, which appears to be caused by a limitation in ActiveScaffold not supporting polymorphic associations. To get it to work with ActiveScaffold:
-
-  class ApplicationController < ActionController::Base
-    audit MyModel, :only => [:create, :update, :destroy]
-  end
-
-== Compatability
-
-acts_as_audited works with Rails 2.1 or later.
-
-== Contributing
-
-Contributions are always welcome. Checkout the latest code on GitHub:
-  http://github.com/collectiveidea/acts_as_audited
-
-Please include tests with your patches. There are a few gems required to run the tests:
-  $ gem install multi_rails
-  $ gem install thoughtbot-shoulda jeremymcanally-matchy --source http://gems.github.com
-
-Make sure the tests pass against all versions of Rails since 2.1:
-
-  $ rake test:multi_rails:all
-
-Please report bugs or feature suggestions on GitHub:
-  http://github.com/collectiveidea/acts_as_audited/issues
+See http://github.com/collectiveidea/acts_as_audited/ for full details on the plugin.
