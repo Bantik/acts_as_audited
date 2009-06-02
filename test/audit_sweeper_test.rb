@@ -9,6 +9,10 @@ class AuditsController < ActionController::Base
     render :nothing => true
   end
   
+  def current_user_for_audit
+    @current_user || current_user
+  end
+  
 end
 AuditsController.view_paths = [File.dirname(__FILE__)]
 ActionController::Routing::Routes.draw {|m| m.connect ':controller/:action/:id' }
