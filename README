@@ -2,7 +2,9 @@
 
 acts_as_audited is an ActiveRecord extension that logs all changes to your models in an audits table.
 
-This fork addresses an issue that arises (apparently in the test environment only) in conjunction with restful_authentication. In this situation, restful_authentication provides the current_user method to the application controller as a mixin method, which does not get recognized by controller.respond_to?(:current_user).
+This fork addresses an issue that arises when a plugin (such as restful_authentication) provides the _current_user_ method to the application controller, causing the audit sweeper to fail to retrieve the current user.
+
+The solution is to explicityly provide a wrapper method for whatever implementation of current_user you have, as shown in the usage instructions below,
 
 == Installation
 
